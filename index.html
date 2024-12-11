@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css"
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <style>
+        .bola {
+            width: 50px;
+            height: 50px;
+            background-color: blue;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 5px;
+        }
+
+        .conatiner_custom {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 100%;
+            max-height: calc(100vh - 10rem);
+            overflow-y: auto;
+        }
+
+        .container_chart {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="conatiner_custom container mt-5">
+        <div id="conatinerBola"></div>
+    </div>
+
+    <div class="conatiner_custom mt-4">
+        <div class="fles">
+            <button class="btn btn-success" onclick="runner()">Jalankan program</button>
+            <button class="btn btn-dark" onclick="tambahBola()">Tambah Bola</button>
+            <button class="btn btn-dark" onclick="tambahBolaJ(10)">Tambah 10 Bola</button>
+            <button class="btn btn-dark" onclick="tambahBolaJ(100)">Tambah 100 Bola</button>
+            <button class="btn btn-dark" onclick="tambahBolaJ(1000)">Tambah 1000 Bola</button>
+            <button class="btn btn-dark" onclick="setWarnaMerahSecaraRandom()">Set warna random</button>
+            <button class="btn btn-danger" onclick="hapusBola()">Reset Bola</button>
+        </div>
+    </div>
+
+    <div class="container_chart container my-5">
+        <canvas id="myChart"></canvas>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        var iLabel = 0;
+        var arrayLabel = [];
+        var arrayDataIteratif = [];
+        var arrayDataRekursif = [];
+
+        const ctx = document.getElementById('myChart');
+
+        var timeChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: arrayLabel,
+                datasets: [{
+                    label: 'Iteratif (ms)',
+                    data: arrayDataIteratif,
+                    borderWidth: 1,
+                    backgroundColor: 'red',
+                    borderColor: 'red'
+                },
+                {
+                    label: 'Rekursif (ms)',
+                    data: arrayDataRekursif,
+                    borderWidth: 1,
+                    backgroundColor: 'blue',
+                    borderColor: 'blue'
+                }
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        function tambahBola() {
+            var bola = document.createElement('div');
+            bola.className = 'bola';
+            bola.style.backgroundColor = 'blue';
+            bola.addEventListener('click', function () {
+                if (this.style.backgroundColor === 'blue') {
+                    this.style.backgroundColor = 'red';
+                } else {
+                    this.style.backgroundColor = 'blue';
+                }
+            });
+            document.getElementById('conatinerBola').appendChild(bola);
+
+            var jumlahBola = document.getElementsByClassName('bola').length;
+        }
+
+        function tambahBolaJ(j) {
+            for (let i = 0; i < j; i++) {
+                tambahBola();
+            }
+        }
+
+        function setWarnaMerahSecaraRandom() {
+            var sArray = document.getElementsByClassName('bola');
+            for (let i = 0; i < sArray.length; i++) {
+                if (Math.random() < 0.5) {
+                    sArray[i].style.backgroundColor = 'red';
+                } else {
+                    sArray[i].style.backgroundColor = 'blue';
+                }
+            }
+        }
+
+        function hapusBola() {
+            var containerBola = document.getElementById('conatinerBola');
+            while (containerBola.firstChild) {
+                containerBola.removeChild(containerBola.lastChild);
+            }
+        }
+
+
+        function runnerRekursif() {
+            function sortRekursif(sArray, left, right, steps) {
+                if (left >= right) {
+                    return steps;
+                }
+                if (sArray[left].style.backgroundColor === 'red') {
+                    return sortRekursif(sArray, left + 1, right, steps);
+                } else if (sArray[right].style.backgroundColor === 'blue') {
+                    return sortRekursif(sArray, left, right - 1, steps);
+                } else {
+                    if (sArray[left].style.backgroundColor !== sArray[right].style.backgroundColor) {
+                        steps++;
+                    }
+                    let temp = sArray[left].style.backgroundColor;
+                    sArray[left].style.backgroundColor = sArray[right].style.backgroundColor;
+                    sArray[right].style.backgroundColor = temp;
+                    return sortRekursif(sArray, left + 1, right - 1, steps);
+                }
+            }
+
+            var sArray = document.getElementsByClassName('bola');
+            var steps = sortRekursif(sArray, 0, sArray.length - 1, 0);
+            console.log('Jumalh steps:', steps);
+        }
+
+        function runnerIteratif() {
+            function sortIteratif(sArray) {
+                let left = 0;
+                let right = sArray.length - 1;
+                let steps = 0;
+
+                while (left <= right) {
+                    if (sArray[left].style.backgroundColor === 'red') {
+                        left++;
+                    } else if (sArray[right].style.backgroundColor === 'blue') {
+                        right--;
+                    } else {
+                        if (sArray[left].style.backgroundColor !== sArray[right].style.backgroundColor) {
+                            steps++;
+                        }
+                        let temp = sArray[left].style.backgroundColor;
+                        sArray[left].style.backgroundColor = sArray[right].style.backgroundColor;
+                        sArray[right].style.backgroundColor = temp;
+                        left++;
+                        right--;
+                    }
+                }
+                return steps;
+            }
+
+            var sArray = document.getElementsByClassName('bola');
+            var steps = sortIteratif(sArray);
+            console.log('Jumlah steps:', steps);
+        }
+
+        function runner() {
+            var sArrayOriginal = Array.from(document.getElementsByClassName('bola'));
+
+            var sArrayRekursif = sArrayOriginal.map(bola => bola.cloneNode(true));
+            var containerBola = document.getElementById('conatinerBola');
+
+            // Riset containerBola
+            containerBola.innerHTML = '';
+            sArrayRekursif.forEach(bola => containerBola.appendChild(bola));
+            const startTimeRekursif = performance.now();
+            runnerRekursif();
+            const endTimeRekursif = performance.now();
+
+            containerBola.innerHTML = '';
+            
+            sArrayOriginal.forEach(bola => containerBola.appendChild(bola));
+            const startTimeIteratif = performance.now();
+            runnerIteratif();
+            const endTimeIteratif = performance.now();
+
+            tambahDataChart(endTimeIteratif - startTimeIteratif, endTimeRekursif - startTimeRekursif);
+            timeChart.update();
+        }
+
+        function tambahDataChart(dataIteratif, dataRekursif) {
+            arrayDataIteratif.push(dataIteratif);
+            arrayDataRekursif.push(dataRekursif);
+            iLabel++;
+            arrayLabel.push(`Run ke-${iLabel}`);
+            timeChart.update();
+        }
+    </script>
+
+
+
+</body>
+
+</html>
