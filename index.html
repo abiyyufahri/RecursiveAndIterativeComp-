@@ -38,26 +38,65 @@
 </head>
 
 <body>
-    <div class="conatiner_custom container mt-5">
+    <div class="conatiner_custom container mt-5 mb-3">
         <div id="conatinerBola"></div>
     </div>
 
-    <div class="conatiner_custom mt-4">
-        <div class="fles">
-            <button class="btn btn-success" onclick="runner()">Jalankan program</button>
-            <button class="btn btn-dark" onclick="tambahBola()">Tambah Bola</button>
-            <button class="btn btn-dark" onclick="tambahBolaJ(10)">Tambah 10 Bola</button>
-            <button class="btn btn-dark" onclick="tambahBolaJ(100)">Tambah 100 Bola</button>
-            <button class="btn btn-dark" onclick="tambahBolaJ(1000)">Tambah 1000 Bola</button>
-            <button class="btn btn-dark" onclick="setWarnaMerahSecaraRandom()">Set warna random</button>
-            <button class="btn btn-danger" onclick="hapusBola()">Reset Bola</button>
+    <div class="conatiner mx-5">
+        <div class="row w-100 justify-center align-items-center">
+            <div class="col-3 d-flex gap-4 flex-column">
+                <div class="input-group mt-1">
+                    <span class="input-group-text" id="basic-addon1">Jumlah bola</span>
+                    <input type="number" class="form-control" placeholder="ex : 100" id="jumlahBola"
+                        aria-describedby="basic-addon1">
+                </div>
+                <button class="btn my-1 mb-4 btn-dark" onclick="tambahBolaJ()">Tambah Bola</button>
+                <button class="btn my-1 btn-success" onclick="runner()">Jalankan program</button>
+                <button class="btn my-1 btn-warning" onclick="setWarnaMerahSecaraRandom()">Randomize warna</button>
+
+                <div class="input-group mt-4 mb-1">
+                    <span class="input-group-text" id="basic-addon1">Jumlah run</span>
+                    <input type="number" class="form-control" placeholder="ex : 10" id="jumlahRun" max="20"
+                        aria-describedby="basic-addon1">
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="autorunRadio1" checked>
+                    <label class="form-check-label" for="flexRadioDefault2">
+                        Jumlah bola tetap
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="autorunRadio2">
+                    <label class="form-check-label" for="flexRadioDefault1">
+                        Jumlah bola random
+                    </label>
+                </div>
+                <button class="btn my-1 btn-primary" onclick="automaticRun()">Automatic run</button>
+
+                <button class="btn mb-1 mt-4 btn-danger" onclick="hapusBola()">Reset Bola</button>
+                <button class="btn mt-1 btn-danger" onclick="resetGarfik()">Reset Grafik</button>
+            </div>
+            <div class="col-1">
+            </div>
+            <div class="col-8 my-5">
+                <canvas id="myChart"></canvas>
+                <div class="row mt-3">
+                    <div class="col">
+                        <div><span>Average iteratif : </span><span style="font-weight: bold;" id="avgIteratif">-</span>
+                            ms</div>
+                    </div>
+                    <div class="col">
+                        <div><span>Average rekursif : </span><span style="font-weight: bold;" id="avgRekursif">-</span>
+                            ms</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="container_chart container my-5">
-        <canvas id="myChart"></canvas>
-    </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.1.0/dist/chartjs-plugin-annotation.min.js"></script>
 
     <script>
         var iLabel = 0;
@@ -66,6 +105,48 @@
         var arrayDataRekursif = [];
 
         const ctx = document.getElementById('myChart');
+
+        function average(index) {
+            if (index === 0) {
+                const values = arrayDataIteratif;
+                return values.reduce((a, b) => a + b, 0) / values.length;
+            } else {
+                const values = arrayDataRekursif;
+                return values.reduce((a, b) => a + b, 0) / values.length;
+            }
+        }
+
+        const annotation = {
+            type: 'line',
+            borderColor: 'red',
+            borderDash: [6, 6],
+            borderDashOffset: 0,
+            borderWidth: 2,
+            label: {
+                display: true,
+                enabled: true,
+                content: (ctx) => 'Iteratif (avg): ' + average(0).toFixed(2) + ' ms',
+                position: 'end'
+            },
+            scaleID: 'y',
+            value: (ctx) => average(0)
+        };
+
+        const annotationB = {
+            type: 'line',
+            borderColor: 'blue',
+            borderDash: [6, 6],
+            borderDashOffset: 0,
+            borderWidth: 2,
+            label: {
+                display: true,
+                enabled: true,
+                content: (ctx) => 'Rekursif (avg): ' + average(1).toFixed(2) + ' ms',
+                position: 'end'
+            },
+            scaleID: 'y',
+            value: (ctx) => average(1)
+        };
 
         var timeChart = new Chart(ctx, {
             type: 'line',
@@ -92,9 +173,21 @@
                     y: {
                         beginAtZero: true
                     }
+                },
+                plugins: {
+                    annotation: {
+                        annotations: {
+                            annotation,
+                            annotationB
+                        }
+                    }
                 }
             }
         });
+
+
+
+
 
         function tambahBola() {
             var bola = document.createElement('div');
@@ -112,7 +205,18 @@
             var jumlahBola = document.getElementsByClassName('bola').length;
         }
 
-        function tambahBolaJ(j) {
+        function resetGarfik() {
+            iLabel = 0;
+            for (let i = 0; i < arrayLabel.length; i++) {
+                arrayLabel.pop();
+                arrayDataIteratif.pop();
+                arrayDataRekursif.pop();
+            }
+            timeChart.update();
+        }
+
+        function tambahBolaJ() {
+            var j = document.getElementById('jumlahBola').value;
             for (let i = 0; i < j; i++) {
                 tambahBola();
             }
@@ -135,7 +239,6 @@
                 containerBola.removeChild(containerBola.lastChild);
             }
         }
-
 
         function runnerRekursif() {
             function sortRekursif(sArray, left, right, steps) {
@@ -192,27 +295,72 @@
             console.log('Jumlah steps:', steps);
         }
 
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function automaticRun() {
+            var radio1 = document.getElementById('autorunRadio1');
+            var radio2 = document.getElementById('autorunRadio2');
+            var sArray = document.getElementsByClassName('bola');
+
+            var jumlahRun = document.getElementById('jumlahRun').value;
+
+            if (sArray.length === 0) {
+                alert('Masukkan bola terlebih dahulu');
+                return;
+            }
+
+
+            if (radio1.checked) {
+                for (let i = 0; i < jumlahRun; i++) {
+                    setWarnaMerahSecaraRandom();
+                    await delay(1000);
+                    runner();
+                    await delay(1200);
+                }
+            } else if (radio2.checked) {
+                for (let i = 0; i < jumlahRun; i++) {
+                    setWarnaMerahSecaraRandom();
+                    runner();
+                }
+            } else {
+                alert('Pilih salah satu radio button');
+            }
+        }
+
+
+
         function runner() {
             var sArrayOriginal = Array.from(document.getElementsByClassName('bola'));
-
             var sArrayRekursif = sArrayOriginal.map(bola => bola.cloneNode(true));
             var containerBola = document.getElementById('conatinerBola');
+            var spanAvgIteratif = document.getElementById('avgIteratif');
+            var spanAvgRekursif = document.getElementById('avgRekursif');
 
-            // Riset containerBola
-            containerBola.innerHTML = '';
-            sArrayRekursif.forEach(bola => containerBola.appendChild(bola));
-            const startTimeRekursif = performance.now();
-            runnerRekursif();
-            const endTimeRekursif = performance.now();
+            function resetContainer() {
+                containerBola.innerHTML = '';
+            }
 
-            containerBola.innerHTML = '';
-            
-            sArrayOriginal.forEach(bola => containerBola.appendChild(bola));
-            const startTimeIteratif = performance.now();
-            runnerIteratif();
-            const endTimeIteratif = performance.now();
+            function appendBolas(array) {
+                array.forEach(bola => containerBola.appendChild(bola));
+            }
 
-            tambahDataChart(endTimeIteratif - startTimeIteratif, endTimeRekursif - startTimeRekursif);
+            function measureTime(runnerFunction, array) {
+                resetContainer();
+                appendBolas(array);
+                const startTime = performance.now();
+                runnerFunction();
+                const endTime = performance.now();
+                return endTime - startTime;
+            }
+            const timeRekursif = measureTime(runnerRekursif, sArrayRekursif);
+            const timeIteratif = measureTime(runnerIteratif, sArrayOriginal);
+
+            tambahDataChart(timeIteratif, timeRekursif);
+            spanAvgIteratif.innerHTML = average(0).toFixed(2);
+            spanAvgRekursif.innerHTML = average(1).toFixed(2);
+
             timeChart.update();
         }
 
