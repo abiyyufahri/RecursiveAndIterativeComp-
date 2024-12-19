@@ -48,7 +48,7 @@
             <div class="col-3 d-flex gap-4 flex-column">
                 <div class="input-group mt-1">
                     <span class="input-group-text" id="basic-addon1">Jumlah bola</span>
-                    <input type="number" class="form-control" placeholder="ex : 100" id="jumlahBola"
+                    <input type="number" class="form-control" placeholder="ex : 100" id="jumlahBola" max="99999"
                         aria-describedby="basic-addon1">
                 </div>
                 <button class="btn my-1 mb-4 btn-dark" onclick="tambahInputString()">Tambah Bola</button>
@@ -175,9 +175,13 @@
         });
 
         function tambahInputString() {
-            var j = document.getElementById('jumlahBola').value;
-            var inputString = document.getElementById('inputString');
-            inputString.value = "0".repeat(j);
+            let j = document.getElementById('jumlahBola').value;
+            let inputString = document.getElementById('inputString');
+            if( inputString.value.length + j.length > 99999 ){
+                alert('Tidak dapat lebih dari 99.999 bola!')
+            }else{
+                inputString.value = "0".repeat(j);
+            }
         }
 
         function resetGarfik() {
@@ -212,12 +216,40 @@
             inputString.value = "";
         }
 
+        async function postData(url = '', inputan) {  
+
+            const data = new FormData();
+            data.append('input', inputan)
+            try {
+                const response = await fetch(url, {
+                    method: 'POST', // Metode HTTP
+                    body: data // Mengonversi data ke format JSON
+                });
+
+                // Memeriksa apakah permintaan berhasil
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+
+                // Mengambil data dari response
+                const responseData = await response.json();
+                return responseData; // Mengembalikan data yang diterima
+            } catch (error) {
+                console.error('There was a problem with the fetch operation:', error);
+            }
+        }
+
         function runnerRekursif() {
 
         }
 
         function runnerIteratif() {
-
+            let input = document.getElementById('inputString').value
+            postData('/', input).then((data)=> {
+                console.log(data);
+                console.log(input)
+            })
+            
         }
 
         function delay(ms) {
@@ -253,6 +285,8 @@
             var spanAvgIteratif = document.getElementById('avgIteratif');
             var spanAvgRekursif = document.getElementById('avgRekursif');
 
+            runnerIteratif();
+
             function resetContainer() {
                 containerBola.innerHTML = '';
             }
@@ -271,6 +305,7 @@
             }
             const timeRekursif = measureTime(runnerRekursif, sArrayRekursif);
             const timeIteratif = measureTime(runnerIteratif, sArrayOriginal);
+
 
             tambahDataChart(timeIteratif, timeRekursif);
             spanAvgIteratif.innerHTML = average(0).toFixed(2);
