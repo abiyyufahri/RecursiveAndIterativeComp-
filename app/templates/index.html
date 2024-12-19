@@ -38,8 +38,9 @@
 </head>
 
 <body>
-    <div class="conatiner_custom container mt-5 mb-3">
-        <div id="conatinerBola"></div>
+    <div class="m-5">
+        <h3 class="mb-4">Program hitung steps soritng</h3>
+        <textarea  placeholder="Inputkan text berupa karakter 0 dan 1" class="form-control" id="inputString" rows="10"></textarea>
     </div>
 
     <div class="conatiner mx-5">
@@ -50,31 +51,19 @@
                     <input type="number" class="form-control" placeholder="ex : 100" id="jumlahBola"
                         aria-describedby="basic-addon1">
                 </div>
-                <button class="btn my-1 mb-4 btn-dark" onclick="tambahBolaJ()">Tambah Bola</button>
+                <button class="btn my-1 mb-4 btn-dark" onclick="tambahInputString()">Tambah Bola</button>
                 <button class="btn my-1 btn-success" onclick="runner()">Jalankan program</button>
-                <button class="btn my-1 btn-warning" onclick="setWarnaMerahSecaraRandom()">Randomize warna</button>
+                <button class="btn my-1 text-white" style="background-color: #828896;" onclick="randomizeAngkaSatu()">Randomize karakter</button>
 
                 <div class="input-group mt-4 mb-1">
                     <span class="input-group-text" id="basic-addon1">Jumlah run</span>
                     <input type="number" class="form-control" placeholder="ex : 10" id="jumlahRun" max="20"
                         aria-describedby="basic-addon1">
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="autorunRadio1" checked>
-                    <label class="form-check-label" for="flexRadioDefault2">
-                        Jumlah bola tetap
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="autorunRadio2">
-                    <label class="form-check-label" for="flexRadioDefault1">
-                        Jumlah bola random
-                    </label>
-                </div>
-                <button class="btn my-1 btn-primary" onclick="automaticRun()">Automatic run</button>
+                <button class="btn my-1 text-white" style="background-color: #828896;" onclick="automaticRun()">Automatic run</button>
 
-                <button class="btn mb-1 mt-4 btn-danger" onclick="hapusBola()">Reset Bola</button>
-                <button class="btn mt-1 btn-danger" onclick="resetGarfik()">Reset Grafik</button>
+                <button class="btn mb-1 mt-4 text-white" style="background-color: 	#e54141;" onclick="clearInput()">Reset Bola</button>
+                <button class="btn mt-1 text-white" style="background-color: 	#e54141;" onclick="resetGarfik()">Reset Grafik</button>
             </div>
             <div class="col-1">
             </div>
@@ -118,7 +107,7 @@
 
         const annotation = {
             type: 'line',
-            borderColor: 'red',
+            borderColor: '#393E46',
             borderDash: [6, 6],
             borderDashOffset: 0,
             borderWidth: 2,
@@ -134,7 +123,7 @@
 
         const annotationB = {
             type: 'line',
-            borderColor: 'blue',
+            borderColor: '#828896',
             borderDash: [6, 6],
             borderDashOffset: 0,
             borderWidth: 2,
@@ -156,15 +145,15 @@
                     label: 'Iteratif (ms)',
                     data: arrayDataIteratif,
                     borderWidth: 1,
-                    backgroundColor: 'red',
-                    borderColor: 'red'
+                    backgroundColor: '#393E46',
+                    borderColor: '#393E46'
                 },
                 {
                     label: 'Rekursif (ms)',
                     data: arrayDataRekursif,
                     borderWidth: 1,
-                    backgroundColor: 'blue',
-                    borderColor: 'blue'
+                    backgroundColor: '#828896',
+                    borderColor: '#828896'
                 }
                 ]
             },
@@ -185,24 +174,10 @@
             }
         });
 
-
-
-
-
-        function tambahBola() {
-            var bola = document.createElement('div');
-            bola.className = 'bola';
-            bola.style.backgroundColor = 'blue';
-            bola.addEventListener('click', function () {
-                if (this.style.backgroundColor === 'blue') {
-                    this.style.backgroundColor = 'red';
-                } else {
-                    this.style.backgroundColor = 'blue';
-                }
-            });
-            document.getElementById('conatinerBola').appendChild(bola);
-
-            var jumlahBola = document.getElementsByClassName('bola').length;
+        function tambahInputString() {
+            var j = document.getElementById('jumlahBola').value;
+            var inputString = document.getElementById('inputString');
+            inputString.value = "0".repeat(j);
         }
 
         function resetGarfik() {
@@ -215,84 +190,34 @@
             timeChart.update();
         }
 
-        function tambahBolaJ() {
-            var j = document.getElementById('jumlahBola').value;
-            for (let i = 0; i < j; i++) {
-                tambahBola();
-            }
-        }
+        function randomizeAngkaSatu() {
+            var inputString = document.getElementById('inputString');
+            var jumlahStr = inputString.value.length;
 
-        function setWarnaMerahSecaraRandom() {
-            var sArray = document.getElementsByClassName('bola');
-            for (let i = 0; i < sArray.length; i++) {
+            inputString.value = "";
+
+            var randomArray = [];
+            for (let i = 0; i < jumlahStr; i++) {
                 if (Math.random() < 0.5) {
-                    sArray[i].style.backgroundColor = 'red';
+                    randomArray.push('1');
                 } else {
-                    sArray[i].style.backgroundColor = 'blue';
+                    randomArray.push('0');
                 }
             }
+            inputString.value = randomArray.join('');
         }
 
-        function hapusBola() {
-            var containerBola = document.getElementById('conatinerBola');
-            while (containerBola.firstChild) {
-                containerBola.removeChild(containerBola.lastChild);
-            }
+        function clearInput() {
+            var j = document.getElementById('jumlahBola').value;
+            inputString.value = "";
         }
 
         function runnerRekursif() {
-            function sortRekursif(sArray, left, right, steps) {
-                if (left >= right) {
-                    return steps;
-                }
-                if (sArray[left].style.backgroundColor === 'red') {
-                    return sortRekursif(sArray, left + 1, right, steps);
-                } else if (sArray[right].style.backgroundColor === 'blue') {
-                    return sortRekursif(sArray, left, right - 1, steps);
-                } else {
-                    if (sArray[left].style.backgroundColor !== sArray[right].style.backgroundColor) {
-                        steps++;
-                    }
-                    let temp = sArray[left].style.backgroundColor;
-                    sArray[left].style.backgroundColor = sArray[right].style.backgroundColor;
-                    sArray[right].style.backgroundColor = temp;
-                    return sortRekursif(sArray, left + 1, right - 1, steps);
-                }
-            }
 
-            var sArray = document.getElementsByClassName('bola');
-            var steps = sortRekursif(sArray, 0, sArray.length - 1, 0);
-            console.log('Jumalh steps:', steps);
         }
 
         function runnerIteratif() {
-            function sortIteratif(sArray) {
-                let left = 0;
-                let right = sArray.length - 1;
-                let steps = 0;
 
-                while (left <= right) {
-                    if (sArray[left].style.backgroundColor === 'red') {
-                        left++;
-                    } else if (sArray[right].style.backgroundColor === 'blue') {
-                        right--;
-                    } else {
-                        if (sArray[left].style.backgroundColor !== sArray[right].style.backgroundColor) {
-                            steps++;
-                        }
-                        let temp = sArray[left].style.backgroundColor;
-                        sArray[left].style.backgroundColor = sArray[right].style.backgroundColor;
-                        sArray[right].style.backgroundColor = temp;
-                        left++;
-                        right--;
-                    }
-                }
-                return steps;
-            }
-
-            var sArray = document.getElementsByClassName('bola');
-            var steps = sortIteratif(sArray);
-            console.log('Jumlah steps:', steps);
         }
 
         function delay(ms) {
@@ -300,33 +225,23 @@
         }
 
         async function automaticRun() {
-            var radio1 = document.getElementById('autorunRadio1');
-            var radio2 = document.getElementById('autorunRadio2');
+            var inputString = document.getElementById('inputString').value;
             var sArray = document.getElementsByClassName('bola');
 
             var jumlahRun = document.getElementById('jumlahRun').value;
 
-            if (sArray.length === 0) {
-                alert('Masukkan bola terlebih dahulu');
+            if (inputString.length === 0) {
+                alert('Masukkan text terlebih dahulu');
                 return;
             }
 
 
-            if (radio1.checked) {
                 for (let i = 0; i < jumlahRun; i++) {
-                    setWarnaMerahSecaraRandom();
+                    randomizeAngkaSatu();
                     await delay(1000);
                     runner();
                     await delay(1200);
                 }
-            } else if (radio2.checked) {
-                for (let i = 0; i < jumlahRun; i++) {
-                    setWarnaMerahSecaraRandom();
-                    runner();
-                }
-            } else {
-                alert('Pilih salah satu radio button');
-            }
         }
 
 
