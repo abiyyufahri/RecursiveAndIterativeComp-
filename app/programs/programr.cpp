@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 
+
 struct Node {
     char data;        // Menyimpan karakter '0' atau '1'
     Node* next;      // Pointer ke node berikutnya
@@ -69,10 +70,10 @@ int main(int argc, char* argv[]) {
             list.append( binaryString[i]);
         }
 
-        cout << total_step << endl;
+        std::cout << total_step << std::endl;
     } else {
         
-        cout << "No input provided." << endl;
+        std::cout << "No input provided." << std::endl;
     }
     
 
