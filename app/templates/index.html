@@ -96,13 +96,11 @@
         const ctx = document.getElementById('myChart');
 
         function average(index) {
-            if (index === 0) {
-                const values = arrayDataIteratif;
-                return values.reduce((a, b) => a + b, 0) / values.length;
-            } else {
-                const values = arrayDataRekursif;
-                return values.reduce((a, b) => a + b, 0) / values.length;
+            let values = index === 0 ? arrayDataIteratif : arrayDataRekursif;
+            if (values.length === 0) {
+                return 0;
             }
+            return values.reduce((a, b) => a + b, 0) / values.length;
         }
 
         const annotation = {
@@ -114,7 +112,7 @@
             label: {
                 display: true,
                 enabled: true,
-                content: (ctx) => 'Iteratif (avg): ' + average(0).toFixed(2) + ' ms',
+                content: (ctx) => 'Iteratif (avg): ' + average(0).toFixed(4) + ' ms',
                 position: 'end'
             },
             scaleID: 'y',
@@ -130,7 +128,7 @@
             label: {
                 display: true,
                 enabled: true,
-                content: (ctx) => 'Rekursif (avg): ' + average(1).toFixed(2) + ' ms',
+                content: (ctx) => 'Rekursif (avg): ' + average(1).toFixed(4) + ' ms',
                 position: 'end'
             },
             scaleID: 'y',
@@ -239,18 +237,6 @@
             }
         }
 
-        function runnerRekursif() {   
-        }
-
-        function runnerIteratif() {
-            let input = document.getElementById('inputString').value
-            postData('/', input).then((data)=> {
-                console.log(data);
-                console.log(input)
-            })
-            
-        }
-
 
 
 
@@ -282,46 +268,28 @@
 
 
         function runner() {
-            var sArrayOriginal = Array.from(document.getElementsByClassName('bola'));
-            var sArrayRekursif = sArrayOriginal.map(bola => bola.cloneNode(true));
-            var containerBola = document.getElementById('conatinerBola');
+            // var sArrayOriginal = Array.from(document.getElementsByClassName('bola'));
+            // var sArrayRekursif = sArrayOriginal.map(bola => bola.cloneNode(true));
+            // var containerBola = document.getElementById('conatinerBola');
             var spanAvgIteratif = document.getElementById('avgIteratif');
             var spanAvgRekursif = document.getElementById('avgRekursif');
 
-            runnerIteratif();
-
-            function resetContainer() {
-                containerBola.innerHTML = '';
-            }
-
-            function appendBolas(array) {
-                array.forEach(bola => containerBola.appendChild(bola));
-            }
-
-            function measureTime(runnerFunction, array) {
-                resetContainer();
-                appendBolas(array);
-                const startTime = performance.now();
-                runnerFunction();
-                const endTime = performance.now();
-                return endTime - startTime;
-            }
-            const timeRekursif = measureTime(runnerRekursif, sArrayRekursif);
-            const timeIteratif = measureTime(runnerIteratif, sArrayOriginal);
-
-
-            tambahDataChart(timeIteratif, timeRekursif);
-            spanAvgIteratif.innerHTML = average(0).toFixed(2);
-            spanAvgRekursif.innerHTML = average(1).toFixed(2);
+            let input = document.getElementById('inputString').value
+            postData('/', input).then((data)=> {
+                tambahDataChart(data['iterative']['run_time'], data['recursive']['run_time'], data['n']);
+            })
+            
+            spanAvgIteratif.innerHTML = average(0).toFixed(4);
+            spanAvgRekursif.innerHTML = average(1).toFixed(4);
 
             timeChart.update();
         }
 
-        function tambahDataChart(dataIteratif, dataRekursif) {
+        function tambahDataChart(dataIteratif, dataRekursif,input) {
             arrayDataIteratif.push(dataIteratif);
             arrayDataRekursif.push(dataRekursif);
             iLabel++;
-            arrayLabel.push(`Run ke-${iLabel}`);
+            arrayLabel.push(`n = ${input}`);
             timeChart.update();
         }
     </script>
