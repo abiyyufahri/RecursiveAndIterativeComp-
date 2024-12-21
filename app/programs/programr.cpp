@@ -60,19 +60,17 @@ void minStep(Node* s);
 
 int main(int argc, char* argv[]) {
     if (argc > 1) {
-        SinglyLinkedList list;
-        std::string binaryString = argv[1];
-        
-        minStep( list.getHead());
-        std::cout << total_step << std::endl;
-        for (int i = binaryString.length() - 1; i>=0; --i) {
-            list.append( binaryString[i]);
+        SinglyLinkedList list; // membuat linked list
+        std::string binaryString = argv[1]; // Mengambil string dari argumen pertama
+        for (int i = binaryString.length() - 1; i>=0; --i) { // Membaca string dari belakang
+            list.append( binaryString[i]); // Menambahkan karakter ke linked list
         }
 
-        cout << total_step << endl;
+        minStep( list.getHead()); // Menghitung jumlah langkah
+        std::cout << total_step << std::endl; // Menampilkan jumlah langkah
     } else {
         
-        cout << "No input provided." << endl;
+        std::cout << "No input provided." << std::endl;
     }
     
 
