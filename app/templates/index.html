@@ -281,7 +281,7 @@
 
             let input = document.getElementById('inputString').value
             postData('/', input).then((data) => {
-                tambahDataChart(data['iterative']['run_time'], data['recursive']['run_time'], data['n']);
+                tambahDataChart(data['iterative']['run_time'], data['recursive']['run_time'], data['n'], data['iterative']['step']);
             })
 
             spanAvgIteratif.innerHTML = average(0).toFixed(4);
@@ -290,11 +290,11 @@
             timeChart.update();
         }
 
-        function tambahDataChart(dataIteratif, dataRekursif, input) {
+        function tambahDataChart(dataIteratif, dataRekursif, input, steps) {
             arrayDataIteratif.push(dataIteratif);
             arrayDataRekursif.push(dataRekursif);
             iLabel++;
-            arrayLabel.push(`n = ${input}`);
+            arrayLabel.push(`n = ${input}, step=${steps}`);
             timeChart.update();
         }
     </script>
