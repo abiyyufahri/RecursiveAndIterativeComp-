@@ -40,30 +40,35 @@
 <body>
     <div class="m-5">
         <h3 class="mb-4">Program hitung steps soritng</h3>
-        <textarea  placeholder="Inputkan text berupa karakter 0 dan 1" class="form-control" id="inputString" rows="10"></textarea>
+        <textarea placeholder="Inputkan text berupa karakter 0 dan 1" class="form-control" id="inputString"
+            rows="10"></textarea>
     </div>
 
     <div class="conatiner mx-5">
         <div class="row w-100 justify-center align-items-center">
             <div class="col-3 d-flex gap-4 flex-column">
                 <div class="input-group mt-1">
-                    <span class="input-group-text" id="basic-addon1">Jumlah bola</span>
+                    <span class="input-group-text" id="basic-addon1">Jumlah karakter</span>
                     <input type="number" class="form-control" placeholder="ex : 100" id="jumlahBola" max="99999"
                         aria-describedby="basic-addon1">
                 </div>
-                <button class="btn my-1 mb-4 btn-dark" onclick="tambahInputString()">Tambah Bola</button>
+                <button class="btn my-1 mb-4 btn-dark" onclick="tambahInputString()">Tambah Karakter</button>
                 <button class="btn my-1 btn-success" onclick="runner()">Jalankan program</button>
-                <button class="btn my-1 text-white" style="background-color: #828896;" onclick="randomizeAngkaSatu()">Randomize karakter</button>
+                <button class="btn my-1 text-white" style="background-color: #828896;"
+                    onclick="randomizeAngkaSatu()">Randomize karakter</button>
 
                 <div class="input-group mt-4 mb-1">
                     <span class="input-group-text" id="basic-addon1">Jumlah run</span>
                     <input type="number" class="form-control" placeholder="ex : 10" id="jumlahRun" max="20"
                         aria-describedby="basic-addon1">
                 </div>
-                <button class="btn my-1 text-white" style="background-color: #828896;" onclick="automaticRun()">Automatic run</button>
+                <button class="btn my-1 text-white" style="background-color: #828896;"
+                    onclick="automaticRun()">Automatic run</button>
 
-                <button class="btn mb-1 mt-4 text-white" style="background-color: 	#e54141;" onclick="clearInput()">Reset Bola</button>
-                <button class="btn mt-1 text-white" style="background-color: 	#e54141;" onclick="resetGarfik()">Reset Grafik</button>
+                <button class="btn mb-1 mt-4 text-white" style="background-color: 	#e54141;"
+                    onclick="clearInput()">Reset Input</button>
+                <button class="btn mt-1 text-white" style="background-color: 	#e54141;" onclick="resetGarfik()">Reset
+                    Grafik</button>
             </div>
             <div class="col-1">
             </div>
@@ -175,9 +180,9 @@
         function tambahInputString() {
             let j = document.getElementById('jumlahBola').value;
             let inputString = document.getElementById('inputString');
-            if( inputString.value.length + j.length > 99999 ){
-                alert('Tidak dapat lebih dari 99.999 bola!')
-            }else{
+            if (inputString.value.length + j.length > 130000) {
+                alert('Tidak dapat lebih dari 130.000 bola!')
+            } else {
                 inputString.value = "0".repeat(j);
             }
         }
@@ -214,7 +219,7 @@
             inputString.value = "";
         }
 
-        async function postData(url = '', inputan) {  
+        async function postData(url = '', inputan) {
 
             const data = new FormData();
             data.append('input', inputan)
@@ -246,46 +251,46 @@
         }
 
         async function automaticRun() {
-            var inputString = document.getElementById('inputString').value;
+            var inputString = document.getElementById('inputString');
             var sArray = document.getElementsByClassName('bola');
 
             var jumlahRun = document.getElementById('jumlahRun').value;
 
-            if (inputString.length === 0) {
-                alert('Masukkan text terlebih dahulu');
-                return;
+            inputString.value = "";
+
+            for (let i = 0; i < jumlahRun; i++) {
+                inputString.value = "0".repeat(1300* ((i+1)*10));
+                console.log(inputString.length);
+                randomizeAngkaSatu();
+                await delay(1000);
+                runner();
+                await delay(1200);
             }
-
-
-                for (let i = 0; i < jumlahRun; i++) {
-                    randomizeAngkaSatu();
-                    await delay(1000);
-                    runner();
-                    await delay(1200);
-                }
         }
 
 
 
         function runner() {
-            // var sArrayOriginal = Array.from(document.getElementsByClassName('bola'));
-            // var sArrayRekursif = sArrayOriginal.map(bola => bola.cloneNode(true));
-            // var containerBola = document.getElementById('conatinerBola');
+            var inputString = document.getElementById('inputString').value;
+            if(inputString.length > 130000){
+                alert('Tidak dapat lebih dari 130.000 bola!');
+                return;
+            }
             var spanAvgIteratif = document.getElementById('avgIteratif');
             var spanAvgRekursif = document.getElementById('avgRekursif');
 
             let input = document.getElementById('inputString').value
-            postData('/', input).then((data)=> {
+            postData('/', input).then((data) => {
                 tambahDataChart(data['iterative']['run_time'], data['recursive']['run_time'], data['n']);
             })
-            
+
             spanAvgIteratif.innerHTML = average(0).toFixed(4);
             spanAvgRekursif.innerHTML = average(1).toFixed(4);
 
             timeChart.update();
         }
 
-        function tambahDataChart(dataIteratif, dataRekursif,input) {
+        function tambahDataChart(dataIteratif, dataRekursif, input) {
             arrayDataIteratif.push(dataIteratif);
             arrayDataRekursif.push(dataRekursif);
             iLabel++;
