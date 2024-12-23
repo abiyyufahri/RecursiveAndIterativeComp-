@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  server:
+    image: img_server_aka:1.0
+    container_name: server_aka
+    ports:
+      - "80:5000"
+    volumes:
+      - ./app:/app
+    environment:
+      - FLASK_ENV=development
