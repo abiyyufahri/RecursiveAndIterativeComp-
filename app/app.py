@@ -15,25 +15,25 @@ def handle_post():
     param = request.form.get('input')
 
     
-    start_time = time()
     result_iterative = run(f"./programs/out {param}", shell=True, capture_output=True, text=True)
-    end_time = time()
-    execution_time_iterative = end_time - start_time  # Waktu eksekusi dalam detik
+    result_iterative = result_iterative.stdout.strip()
+    result_iterative = str(result_iterative).split('\n')
+    execution_time_iterative = result_iterative[1]
 
-    start_time = time()
     result_recursive = run(f"./programs/rr {param}", shell=True, capture_output=True, text=True)
-    end_time = time()
-    execution_time_recursive = end_time - start_time
+    result_recursive = result_recursive.stdout.strip()
+    result_recursive = str(result_recursive).split('\n')
+    execution_time_recursive = result_recursive[0]
 
     n = str(len(param))
     return jsonify({
         'n': n,
         'iterative' : {
-                'step': result_iterative.stdout.strip(),
+                'step': result_iterative[0],
                 'run_time': execution_time_iterative
             },
         'recursive' : {
-            'step': result_recursive.stdout.strip(),
+            'step': result_recursive[1],
             'run_time': execution_time_recursive
             }
     })
