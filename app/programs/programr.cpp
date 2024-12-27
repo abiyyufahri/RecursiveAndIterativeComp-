@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-
+#include <chrono>
 
 struct Node {
     char info;        // Menyimpan karakter '0' atau '1'
@@ -29,7 +29,9 @@ void append(SinglyLinkedList &list, char val) { // insert last
 long long total_step = 0;
 int n1 = 0;
 int n = 0;
+// std::string s;
 void minStep(Node* s);
+// void minStep(int i);
 
 int main(int argc, char* argv[]) {
     if (argc > 1) {
@@ -39,8 +41,14 @@ int main(int argc, char* argv[]) {
         for (int i = binaryString.length() - 1; i>=0; --i) { // Membaca string dari belakang
             append(list, binaryString[i]); // Menambahkan karakter ke linked list
         }
-
-        minStep(list.head);
+        // s = "0" + binaryString;
+        
+        
+        auto start = std::chrono::high_resolution_clock::now();
+        minStep( list.head);    // Memanggil fungsi minStep
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+        std::cout << "" << duration.count() << "" << std::endl;
         std::cout << total_step << std::endl;
     } else {
         
@@ -55,7 +63,9 @@ int main(int argc, char* argv[]) {
 void minStep(Node* s) {
     if( s == nullptr) 
         return;
-    else {
+    else { 
+
+        
         if (s->info == '1') {
             total_step += n - n1;
             n1++;
@@ -63,8 +73,22 @@ void minStep(Node* s) {
         n++;
         minStep(s->next);
     }
-        
 }
+
+// void minStep(int i) {
+//     if( i == -1 ){
+//         return;
+//     }else {
+//         if (s[i] == '1') {
+//             total_step += n - n1;
+//             n1++;
+//         }
+//         n++;
+//         minStep(i-1);
+//     }
+// }
+
+// }
 
 // 0  , n = 0
 // 1  , n > 0

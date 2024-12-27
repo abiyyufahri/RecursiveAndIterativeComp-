@@ -1,11 +1,16 @@
 #include <iostream>
+#include <chrono>
 
 using namespace std;
 
 long long minStep(string s);
 int main(int argc, char* argv[]) {
     if (argc > 1) {
+        auto start = std::chrono::high_resolution_clock::now();
         cout << minStep(argv[1]) << endl;
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+        std::cout << "" << duration.count() << "" << std::endl;
     } else {
         cout << "No input provided." << endl;
     }
